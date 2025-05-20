@@ -1,0 +1,21 @@
+# Основные
+fastapi==0.95.0
+uvicorn==0.21.1
+gunicorn==20.1.0
+
+# Компьютерное зрение
+opencv-python==4.7.0.72
+Pillow==9.5.0
+
+# Машинное обучение
+torch==2.0.0
+torchvision==0.15.1
+faiss-cpu==1.7.3
+scikit-learn==1.2.2
+
+# Дополнительные
+redis==4.5.5
+python-multipart==0.0.6
+numpy==1.24.3
+folium==0.14.0  # Для визуализации карт
+pyyaml==6.0     # Для конфигурации

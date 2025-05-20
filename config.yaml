@@ -1,0 +1,18 @@
+model:
+  num_clusters: 64
+  feature_dim: 2048
+  weights_path: "data/netvlad.pth"
+
+processing:
+  max_distance: 0.25
+  view_clusters: 3
+  min_inliers: 15
+
+redis:
+  host: "redis"
+  port: 6379
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  reload: True
