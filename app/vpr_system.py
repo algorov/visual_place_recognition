@@ -4,7 +4,7 @@ import numpy as np
 import faiss
 import torch
 from torchvision import transforms
-from .model import NetVLAD
+from .model import CNNTransformerNetVLAD
 from .storage.storage import Storage
 from .config import CONFIG, NUM_CLUSTERS, FEATURE_DIM, IMAGE_SIZE
 from .geometry import is_valid_match
@@ -12,13 +12,20 @@ from .geometry import is_valid_match
 class VPRSystem:
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = NetVLAD(NUM_CLUSTERS, FEATURE_DIM).to(self.device).eval()
+        self.model = CNNTransformerNetVLAD(
+            num_clusters=NUM_CLUSTERS,
+            feature_dim=FEATURE_DIM,
+            nhead=8,
+            num_layers=6
+        ).to(self.device).eval()
+
         self.transform = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(IMAGE_SIZE),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ])
+
         self.index = faiss.IndexFlatL2(NUM_CLUSTERS * FEATURE_DIM)
         self.storage = Storage(CONFIG['redis_host'], CONFIG['redis_port'])
         self.storage.flushdb()
