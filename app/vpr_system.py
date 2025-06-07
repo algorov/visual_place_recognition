@@ -4,7 +4,7 @@ import numpy as np
 import faiss
 import torch
 from torchvision import transforms
-from .model import MegaLocWrapper
+from .model import MegaLoc
 from .storage.storage import Storage
 from .config import CONFIG, IMAGE_SIZE
 
@@ -12,7 +12,7 @@ from .config import CONFIG, IMAGE_SIZE
 class VPRSystem:
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = MegaLocWrapper().to(self.device)
+        self.model = MegaLoc().to(self.device)
         self.model.eval()
 
         self.transform = transforms.Compose([
@@ -27,8 +27,10 @@ class VPRSystem:
             dummy = torch.zeros(1, 3, IMAGE_SIZE, IMAGE_SIZE).to(self.device)
             output_dim = self.model(dummy).shape[1]
 
+        redis_cfg = CONFIG["redis"]
+
         self.index = faiss.IndexFlatL2(output_dim)
-        self.storage = Storage(CONFIG['redis_host'], CONFIG['redis_port'])
+        self.storage = Storage(redis_cfg['host'], redis_cfg['port'])
         self.storage.flushdb()
 
         self.descriptor_to_scene: List[str] = []

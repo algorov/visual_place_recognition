@@ -39,12 +39,12 @@ def run_video_inference(entries: List[Dict[str, Any]]):
 
     :param entries: Список записей базы изображений.
     """
-    print("\n🎥 Обработка видеофайла:", CONFIG["video_path"])
+    print("\n🎥 Обработка видеофайла:", CONFIG["test_video_path"])
 
     vpr = VPRSystem()
     vpr.build_index(entries)
 
-    processor = VideoProcessor(CONFIG['video_path'], step=10)
+    processor = VideoProcessor(CONFIG['test_video_path'], step=10)
     pos_filter = PositionFilter(window=5)
 
     for frame in processor.frames():
