@@ -4,9 +4,9 @@ import numpy as np
 import faiss
 import torch
 from torchvision import transforms
-from .model import MegaLoc
-from .storage.storage import Storage
-from .config import CONFIG, IMAGE_SIZE
+from app.usecase.mega_loc.model import MegaLoc
+from app.usecase.storage.storage import Storage
+from app.config.config import CONFIG, IMAGE_SIZE
 
 
 class VPRSystem:

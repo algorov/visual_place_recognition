@@ -7,8 +7,8 @@ from typing import List, Dict, Any
 from app.video_processor import VideoProcessor
 from app.position_filter import PositionFilter
 from app.scene_loader import load_scene_metadata, load_scene_dataset
-from app.vpr_system import VPRSystem
-from app.config import CONFIG
+from app.usecase.vpr_system.vpr_system import VPRSystem
+from app.config.config import CONFIG
 
 # 🔧 Защита от OpenMP конфликта между FAISS и PyTorch
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"

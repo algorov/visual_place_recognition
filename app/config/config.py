@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from .utils import str_to_float, str_to_int
+from app.utils.utils import str_to_int
 
 # --- Пути и загрузка переменных окружения ---
 BASE_DIR = Path(__file__).resolve().parent.parent
