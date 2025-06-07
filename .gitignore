@@ -1,0 +1,48 @@
+# Python bytecode cache
+__pycache__/
+app/__pycache__/
+
+# Compiled Python files
+*.py[cod]
+*$py.class
+
+# macOS system files
+.DS_Store
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Virtual environments
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Unit test / coverage
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Logs and databases
+*.log
+db.sqlite3
+
+# VS Code
+.vscode/
+
+# Others
+Thumbs.db
+ehthumbs.db
