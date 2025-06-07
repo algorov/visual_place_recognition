@@ -4,9 +4,9 @@
 import os
 from typing import List, Dict, Any
 
-from app.video_processor import VideoProcessor
+from app.usecase.video_processor.video_processor import VideoProcessor
 from app.position_filter import PositionFilter
-from app.scene_loader import load_scene_metadata, load_scene_dataset
+from app.usecase.loader.scene_loader import load_scene_metadata, load_scene_dataset
 from app.usecase.vpr_system.vpr_system import VPRSystem
 from app.config.config import CONFIG
 
