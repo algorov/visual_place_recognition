@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Загрузка видео</title>
+  <link rel="stylesheet" href="./static/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🎥 Анализ видео по геолокации</h1>
+
+    <input type="file" id="fileInput" accept="video/*" />
+    <video id="videoPreview" controls class="hidden"></video>
+    <button id="uploadBtn" disabled>🚀 Отправить на анализ</button>
+
+    <div id="message"></div>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const videoPreview = document.getElementById("videoPreview");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const message = document.getElementById("message");
+    const results = document.getElementById("results");
+
+    let selectedFile = null;
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file && file.type.startsWith("video/")) {
+        selectedFile = file;
+        videoPreview.src = URL.createObjectURL(file);
+        videoPreview.classList.remove("hidden");
+        uploadBtn.disabled = false;
+        message.textContent = "";
+        results.innerHTML = "";
+      } else {
+        message.textContent = "❌ Пожалуйста, выберите корректный видеофайл";
+        uploadBtn.disabled = true;
+      }
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+      if (!selectedFile) return;
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      message.textContent = "⏳ Видео обрабатывается...";
+      uploadBtn.disabled = true;
+
+      try {
+        const response = await fetch("http://localhost:8000/process-video/", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          message.textContent = "✅ Анализ завершён!";
+          results.innerHTML = data.results.map(r => `
+            <div class="result">
+              <p><strong>Scene:</strong> ${r.metadata.scene_id}</p>
+              <p><strong>Title:</strong> ${r.metadata.title}</p>
+              <p><strong>Coords:</strong> ${r.metadata.latitude}, ${r.metadata.longitude}</p>
+              <p><strong>Distance:</strong> ${r.distance.toFixed(6)}</p>
+            </div>
+          `).join("");
+        } else {
+          message.textContent = "❌ Ошибка при анализе: " + (data.error || "неизвестная ошибка");
+        }
+
+      } catch (err) {
+        console.error(err);
+        message.textContent = "❌ Ошибка при отправке запроса";
+      }
+
+      uploadBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>

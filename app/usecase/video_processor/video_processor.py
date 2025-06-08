@@ -41,9 +41,8 @@ class VideoProcessor:
                     break
 
                 if frame_id % self.step == 0:
-                    # OpenCV использует BGR, PIL ожидает RGB
                     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    yield Image.fromarray(rgb_frame)
+                    yield Image.fromarray(rgb_frame), frame_id
 
                 frame_id += 1
         finally:
