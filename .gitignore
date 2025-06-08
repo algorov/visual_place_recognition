@@ -2,6 +2,9 @@
 __pycache__/
 app/__pycache__/
 
+# Python Venv
+.venv/
+
 # Compiled Python files
 *.py[cod]
 *$py.class
