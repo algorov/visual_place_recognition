@@ -1,21 +1,20 @@
-import asyncio
 from typing import List, Dict, Any
 from app.usecase.video_processor.video_processor import VideoProcessor
 from app.usecase.vpr.vpr import VPRSystem
 
 
 class VPEProcessor:
-    def __init__(self, vpr_system: VPRSystem, frame_step: int = 30):
+    def __init__(self, vpr_system: VPRSystem, frame_step: int = 5):
         self.vpr = vpr_system
         self.frame_step = frame_step
 
-    async def process_video(self, video_path: str) -> List[Dict[str, Any]]:
+    def process_video(self, video_path: str) -> List[Dict[str, Any]]:
         video_processor = VideoProcessor(video_path, self.frame_step)
         seen_coords = set()
         results: List[Dict[str, Any]] = []
 
         for img, frame_idx in video_processor.frames():
-            res = await asyncio.to_thread(self.vpr.search, img)
+            res = self.vpr.search(img)
             if not res:
                 continue
 

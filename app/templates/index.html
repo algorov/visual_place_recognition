@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Загрузка видео</title>
   <link rel="stylesheet" href="./static/styles.css" />
 </head>
@@ -11,7 +11,9 @@
     <h1>🎥 Определение геопозиции на основе видеопотока</h1>
 
     <input type="file" id="fileInput" accept="video/*" />
-    <video id="videoPreview" controls class="hidden"></video>
+    <div class="video-wrapper hidden" id="videoWrapper">
+      <video id="videoPreview" controls></video>
+    </div>
     <button id="uploadBtn" disabled>🚀 Определить местоположение</button>
 
     <div id="message"></div>
@@ -21,6 +23,7 @@
   <script>
     const fileInput = document.getElementById("fileInput");
     const videoPreview = document.getElementById("videoPreview");
+    const videoWrapper = document.getElementById("videoWrapper");
     const uploadBtn = document.getElementById("uploadBtn");
     const message = document.getElementById("message");
     const results = document.getElementById("results");
@@ -32,13 +35,15 @@
       if (file && file.type.startsWith("video/")) {
         selectedFile = file;
         videoPreview.src = URL.createObjectURL(file);
-        videoPreview.classList.remove("hidden");
+        videoWrapper.classList.remove("hidden");
         uploadBtn.disabled = false;
         message.textContent = "";
         results.innerHTML = "";
       } else {
         message.textContent = "❌ Пожалуйста, выберите корректный видеофайл";
         uploadBtn.disabled = true;
+        videoWrapper.classList.add("hidden");
+        videoPreview.src = "";
       }
     });
 
@@ -63,16 +68,15 @@
           message.textContent = "✅ Анализ завершён!";
           results.innerHTML = data.results.map(r => `
             <div class="result">
-              <p><strong>Scene:</strong> ${r.metadata.scene_id}</p>
-              <p><strong>Title:</strong> ${r.metadata.title}</p>
-              <p><strong>Coords:</strong> ${r.metadata.latitude}, ${r.metadata.longitude}</p>
+              <p><strong>Scene:</strong> ${r.scene_id}</p>
+              <p><strong>Title:</strong> ${r.title}</p>
+              <p><strong>Coords:</strong> ${r.latitude}, ${r.longitude}</p>
               <p><strong>Distance:</strong> ${r.distance.toFixed(6)}</p>
             </div>
           `).join("");
         } else {
           message.textContent = "❌ Ошибка при анализе: " + (data.error || "неизвестная ошибка");
         }
-
       } catch (err) {
         console.error(err);
         message.textContent = "❌ Ошибка при отправке запроса";
