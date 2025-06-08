@@ -1,47 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background: #f9f9f9;
-  color: #333;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #dbeafe, #f0fdf4);
+  color: #1e293b;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
 }
 
 .container {
-  max-width: 600px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 2rem 2.5rem;
   width: 100%;
-  padding: 1rem 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  text-align: center; /* Центрируем текст и inline элементы */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  max-width: 700px;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
 h1 {
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
 }
 
 input[type="file"] {
-  margin-bottom: 1rem;
+  display: block;
+  margin: 0 auto 1rem auto;
+  padding: 0.4rem;
+  border: 2px dashed #94a3b8;
+  border-radius: 10px;
+  background-color: #f1f5f9;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
   width: 100%;
   max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
+}
+
+input[type="file"]:hover {
+  border-color: #3b82f6;
 }
 
 .video-wrapper {
-  max-width: 100%;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.08);
 }
 
 .hidden {
@@ -52,53 +65,67 @@ video {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 button {
-  cursor: pointer;
-  background-color: #0069d9;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.4rem;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
-  margin: 0 auto; /* Центрируем кнопку */
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  margin: 0 auto;
   display: block;
 }
 
 button:disabled {
-  background-color: #cccccc;
+  background: #cbd5e1;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 button:not(:disabled):hover {
-  background-color: #0053ba;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
 }
 
 #message {
   margin-top: 1rem;
-  font-weight: bold;
+  font-weight: 600;
   min-height: 1.5em;
-  color: #e55353;
   text-align: center;
+  transition: color 0.3s ease;
+}
+
+#message:empty {
+  display: none;
 }
 
 #results {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   width: 100%;
 }
 
 .result {
-  border-top: 1px solid #eee;
-  padding: 0.8rem 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem auto;
   text-align: left;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  transition: transform 0.3s ease;
+}
+
+.result:hover {
+  transform: scale(1.02);
 }
 
 .result p {
-  margin: 0.2rem 0;
+  margin: 0.4rem 0;
 }
