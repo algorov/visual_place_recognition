@@ -3,12 +3,14 @@
 
 import os
 from typing import List, Dict, Any
+from dataclasses import asdict
 
 from app.usecase.video_processor.video_processor import VideoProcessor
 from app.position_filter import PositionFilter
 from app.usecase.loader.scene_loader import load_scene_metadata, load_scene_dataset
 from app.usecase.vpr_system.vpr_system import VPRSystem
 from app.config.config import CONFIG
+
 
 # 🔧 Защита от OpenMP конфликта между FAISS и PyTorch
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
@@ -51,11 +53,12 @@ def run_video_inference(entries: List[Dict[str, Any]]):
         result = vpr.search(frame)
         if result:
             print("\n🎯 Найдено совпадение:")
-            for key, value in result.items():
-                if isinstance(value, float):
-                    print(f"  {key}: {value:.6f}")
-                else:
-                    print(f"  {key}: {value}")
+
+            metadata_dict = asdict(result.metadata)
+            for key, value in metadata_dict.items():
+                print(f"  {key}: {value}")
+
+            print(f"  Distance: {result.distance:.6f}")
 
 
 if __name__ == '__main__':
