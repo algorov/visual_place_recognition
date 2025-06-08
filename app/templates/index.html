@@ -4,20 +4,158 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Загрузка видео</title>
-  <link rel="stylesheet" href="./static/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 2rem;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      margin: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .drop-area {
+      border: 2px dashed #666;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .drop-area.hover {
+      background-color: #2a2a2a;
+      border-color: #888;
+    }
+
+    .browse-text {
+      color: #61dafb;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #61dafb, #1db954);
+      background-size: 200% 100%;
+      animation: progress 1.5s linear infinite;
+      border-radius: 2px;
+      margin: 1rem 0;
+    }
+
+    @keyframes progress {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #1db954;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #17a74a;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+      min-height: 1.5em;
+      color: #f44336;
+    }
+
+    #results {
+      margin-top: 1rem;
+    }
+
+    .result {
+      padding: 0.8rem 0;
+      border-top: 1px solid #333;
+    }
+
+    .result p {
+      margin: 0.3rem 0;
+    }
+
+    #map {
+      height: 300px;
+      width: 100%;
+      margin-top: 1rem;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>🎥 Определение геопозиции на основе видеопотока</h1>
 
-    <input type="file" id="fileInput" accept="video/*" />
+    <div id="dropArea" class="drop-area">
+      <p>📁 Перетащите видео сюда или <span class="browse-text">нажмите для выбора</span></p>
+      <input type="file" id="fileInput" accept="video/*" hidden />
+    </div>
+
     <div class="video-wrapper hidden" id="videoWrapper">
       <video id="videoPreview" controls></video>
     </div>
+
+    <div class="progress-bar hidden" id="progressBar"></div>
+
     <button id="uploadBtn" disabled>🚀 Определить местоположение</button>
 
     <div id="message"></div>
     <div id="results"></div>
+    <div id="map" class="hidden"></div>
   </div>
 
   <script>
@@ -27,25 +165,58 @@
     const uploadBtn = document.getElementById("uploadBtn");
     const message = document.getElementById("message");
     const results = document.getElementById("results");
+    const dropArea = document.getElementById("dropArea");
+    const progressBar = document.getElementById("progressBar");
+    const mapDiv = document.getElementById("map");
 
     let selectedFile = null;
+    let map;
+
+    dropArea.addEventListener("click", () => fileInput.click());
+
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.add("hover");
+      });
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.remove("hover");
+      });
+    });
+
+    dropArea.addEventListener("drop", e => {
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("video/")) {
+        handleFile(file);
+      } else {
+        message.textContent = "❌ Пожалуйста, выберите корректный видеофайл";
+      }
+    });
 
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
       if (file && file.type.startsWith("video/")) {
-        selectedFile = file;
-        videoPreview.src = URL.createObjectURL(file);
-        videoWrapper.classList.remove("hidden");
-        uploadBtn.disabled = false;
-        message.textContent = "";
-        results.innerHTML = "";
+        handleFile(file);
       } else {
         message.textContent = "❌ Пожалуйста, выберите корректный видеофайл";
-        uploadBtn.disabled = true;
-        videoWrapper.classList.add("hidden");
-        videoPreview.src = "";
       }
     });
+
+    function handleFile(file) {
+      selectedFile = file;
+      videoPreview.src = URL.createObjectURL(file);
+      videoWrapper.classList.remove("hidden");
+      uploadBtn.disabled = false;
+      message.textContent = "";
+      results.innerHTML = "";
+      mapDiv.classList.add("hidden");
+    }
 
     uploadBtn.addEventListener("click", async () => {
       if (!selectedFile) return;
@@ -55,6 +226,7 @@
 
       message.textContent = "⏳ Видео обрабатывается...";
       uploadBtn.disabled = true;
+      progressBar.classList.remove("hidden");
 
       try {
         const response = await fetch("http://localhost:8000/process-video/", {
@@ -63,6 +235,7 @@
         });
 
         const data = await response.json();
+        progressBar.classList.add("hidden");
 
         if (response.ok) {
           message.textContent = "✅ Анализ завершён!";
@@ -74,12 +247,29 @@
               <p><strong>Distance:</strong> ${r.distance.toFixed(6)}</p>
             </div>
           `).join("");
+
+          mapDiv.classList.remove("hidden");
+          if (!map) {
+            map = L.map("map").setView([data.results[0].latitude, data.results[0].longitude], 13);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+          } else {
+            map.setView([data.results[0].latitude, data.results[0].longitude], 13);
+          }
+
+          data.results.forEach(r => {
+            L.marker([r.latitude, r.longitude])
+              .addTo(map)
+              .bindPopup(`<b>${r.title}</b><br>${r.latitude}, ${r.longitude}`);
+          });
         } else {
           message.textContent = "❌ Ошибка при анализе: " + (data.error || "неизвестная ошибка");
         }
       } catch (err) {
         console.error(err);
         message.textContent = "❌ Ошибка при отправке запроса";
+        progressBar.classList.add("hidden");
       }
 
       uploadBtn.disabled = false;
