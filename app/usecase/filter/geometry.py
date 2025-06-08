@@ -57,8 +57,8 @@ def is_valid_match(query_image: Union[np.ndarray, Image.Image],
     dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
 
     # Параметры для RANSAC-гомографии
-    homography_threshold = 5.0  # максимально допустимое расстояние для inlier
-    min_inlier_ratio = 0.3      # минимальное отношение inliers к общему числу матчей
+    homography_threshold = 8.0  # максимально допустимое расстояние для inlier
+    min_inlier_ratio = 0.1      # минимальное отношение inliers к общему числу матчей
 
     # Находим гомографию и маску inliers
     homography, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, homography_threshold)

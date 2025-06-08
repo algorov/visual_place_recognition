@@ -1,6 +1,9 @@
 import csv
+import os
 from typing import Dict, List, Any
 from pathlib import Path
+
+from PIL import Image
 
 VALID_EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
@@ -85,3 +88,33 @@ def load_scene_dataset(dataset_path: str, metadata: Dict[str, Dict[str, Any]]) -
                 })
 
     return entries
+
+def load_scene_images_by_id(scene_id: str, base_dir: str = "data/scenes/") -> List[Image.Image]:
+    """
+    Загружает все изображения сцены по scene_id из директории.
+
+    Args:
+        scene_id (str): ID сцены, например "scene_5"
+        base_dir (str): Базовая директория с изображениями сцен
+
+    Returns:
+        List[PIL.Image.Image]: список изображений
+    """
+    scene_dir = os.path.join(base_dir, scene_id)
+    if not os.path.isdir(scene_dir):
+        raise FileNotFoundError(f"Директория для scene_id={scene_id} не найдена: {scene_dir}")
+
+    images = []
+    for filename in os.listdir(scene_dir):
+        if filename.lower().endswith((".jpg", ".jpeg", ".png")):
+            img_path = os.path.join(scene_dir, filename)
+            try:
+                img = Image.open(img_path).convert("RGB")
+                images.append(img)
+            except Exception as e:
+                print(f"⚠️ Не удалось загрузить {img_path}: {e}")
+
+    if not images:
+        raise FileNotFoundError(f"Не найдено изображений в директории: {scene_dir}")
+
+    return images

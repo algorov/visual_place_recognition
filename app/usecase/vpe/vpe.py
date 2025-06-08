@@ -1,6 +1,8 @@
 from typing import List, Dict, Any
 from app.usecase.video_processor.video_processor import VideoProcessor
 from app.usecase.vpr.vpr import VPRSystem
+from app.usecase.loader.scene_loader import load_scene_images_by_id
+from app.usecase.filter.geometry import is_valid_match
 
 
 class VPEProcessor:
@@ -16,6 +18,16 @@ class VPEProcessor:
         for img, frame_idx in video_processor.frames():
             res = self.vpr.search(img)
             if not res:
+                continue
+
+            try:
+                scene_images = load_scene_images_by_id(res.metadata.scene_id)
+            except FileNotFoundError as e:
+                print(f"⚠️ {e}")
+                continue
+
+            # Применяем гомографию к каждому изображению сцены
+            if not any(is_valid_match(img, ref_img) for ref_img in scene_images):
                 continue
 
             md = res.metadata
