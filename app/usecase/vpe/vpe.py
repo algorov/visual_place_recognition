@@ -4,7 +4,7 @@ from app.usecase.vpr.vpr import VPRSystem
 
 
 class VPEProcessor:
-    def __init__(self, vpr_system: VPRSystem, frame_step: int = 5):
+    def __init__(self, vpr_system: VPRSystem, frame_step: int = 30):
         self.vpr = vpr_system
         self.frame_step = frame_step
 

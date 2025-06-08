@@ -7,6 +7,7 @@ import shutil
 import os
 import uuid
 
+from fastapi.middleware.cors import CORSMiddleware
 from ..usecase.vpr.vpr import VPRSystem
 from ..usecase.vpe.vpe import VPEProcessor
 
@@ -22,6 +23,14 @@ class VPEServer:
 
         self.processor = VPEProcessor(self.vpr)
         self.app = FastAPI(title="VPE Server")
+
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
 
         self._setup_routes()
 
